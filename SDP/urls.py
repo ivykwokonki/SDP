@@ -14,7 +14,12 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from SDP_API.Instructor import views as Instructor_views
+from SDP_API.HR import views as HR_views
+from SDP_API.Participant import views as Participant_views
+from SDP_API.Admin import views as Admin_views
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^Instructor/createCourse/$', Instructor_views.create_course,name='create_course'),
 ]

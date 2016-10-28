@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 
 class Profile(models.Model):
@@ -7,7 +7,7 @@ class Profile(models.Model):
         verbose_name = "AB User"
 
     class Role_choice:
-        INSPECTOR = 0
+        INSTRUCTOR = 0
         PARTICIPANTS = 1
         ADMIN = 2
         HR = 3
@@ -20,9 +20,6 @@ class Profile(models.Model):
 class CourseHistroy(models.Model):
     completed_at = models.DateTimeField(auto_now_add=True)
     course = models.ForeignKey(Course)
-    username = models.ForeignKey(User, unique=True)
-
-class Enrollment(models.Model):
     username = models.ForeignKey(User, unique=True)
 
 class Category(models.Model):

@@ -37,6 +37,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'SDP_API',
+    'django_extensions',
+    'pydotplus'
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -55,7 +59,7 @@ ROOT_URLCONF = 'SDP.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'site')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -99,4 +103,4 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/site/'

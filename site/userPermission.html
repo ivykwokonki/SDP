@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<ul class="nav nav-tabs">
+		<li class="active"><a href="/Admin/userPermission/">Manage User Permission</a></li>
+		<li><a href="/Admin/manageCategory/">Manage Category</a></li>
+</ul>
+<h1>Manage User Permission</h1>
+	<div>
+
+		<input id="ABusername" type="text" class="form-control input-lg" placeholder="Search AB username" />
+		<button class="btn btn-default" id="username_submit"></button>
+		<select class="role_select" onchange="role_select()">
+			<option value="all">All</option>
+			<option value="admin">Administrator</option>
+			<option value="HR">HR</option>
+			<option value="Instructor">Instructor</option>
+		</select>
+	</div>
+	<table class="table table-striped table-hover">
+		<tr>
+			<th>Username</th>
+			<th>Administrator</th>
+			<th>HR</th>
+			<th>Instructor</th>
+			<th>Instructor:create</th>
+			<th>Instructor:modify</th>
+			<th>Access to SDP</th>
+		</tr>
+		{% for u in user %}
+		<tr>
+			<td>{{ u.username }}</td>
+			<td> <input type="checkbox" class="admin_permission {{u.id}}" value="{% %}"> </td>
+			<td> <input type="checkbox" class="HR_permission {{u.id}}" value=""> </td>
+			<td> <input type="checkbox" class="Instructor_permission {{u.id}}" value=""> </td>
+			<td> <input type="checkbox" class="Instructor_create {{u.id}}" value=""> </td>
+			<td> <input type="checkbox" class="Instructor_modify {{u.id}}" value=""> </td>
+			<td> <input type="checkbox" class="accessSDP_permission {{u.id}}" value=""> </td>
+		</tr>
+		{% endfor %}
+	</table>
+	<div class="modal" id="warning-modal">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	        <h4 class="modal-title">Confirm</h4>
+	      </div>
+	      <div class="modal-body">
+	        <p>You want to release this course? </p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        <button type="button" class="btn btn-warning release_submit_btn">Save changes</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+	<script>
+
+		api = "http://127.0.0.1:8000/";
+		$(".role_selection li").removeClass("active");
+		$("#admin").addClass("active");
+		function role_select(){
+				// search all user in that role
+				console.log("hihi");
+		}
+
+
+		$(".release_submit_btn").click(function() {
+			courseID = $(this).attr("id");
+			$.ajax({
+				type: "POST",
+				url: api +"Instructor/releaseCourse/",
+				data:{ 
+					releaseCourseID:courseID,
+					csrfmiddlewaretoken: '{{ csrf_token }}' },
+				success:function(msg){
+					if(msg=="success")
+						console.log("success");
+					$(".warning-modal").modal('hide');
+					location.reload();
+					
+				},complete:function(){
+					console.log("complete");
+				},
+    			error:function (xhr, textStatus, thrownError){
+        			alert("error:"+thrownError);
+    			}
+
+			});
+  			$("#release_submit_btn").attr("course",$(this).attr('id'))
+		});
+
+
+	</script>
+{% endblock %}

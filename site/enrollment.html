@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<ul class="nav nav-tabs">
+		<li><a href="/Participant/availableCourse/">View Abailable Courses</a></li>
+		<li><a href="/Participant/currentCourse/">Current Course</a></li>
+		<li><a href="/accounts/logout/">Log-out</a></li>
+</ul>
+<h1>Enrollment</h1>
+	<div>
+		{% if profile.currentCourse != -999 %}
+			<span>Current Course: {{ course.name }}</span>
+		{% else %}
+			<span>No Course is enrolled.</span>
+		{% endif %}
+	</div>
+	{% if error %}
+		<span>{{ error }}<span>
+	{% endif %}
+{% endblock %}

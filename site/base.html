@@ -1,0 +1,51 @@
+<!doctype html>
+{% load user_context %}
+<html>
+    <head>
+        <title></title>
+        {% load static %}
+		<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+        <script src="js/script.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    	<style>
+    		body{
+    			color: #9e969e;
+    		}	
+    	</style>
+    </head>
+    <body>
+    	<nav class="navbar navbar-default">
+		  <div class="container-fluid">
+			<div class="navbar-header">
+			  <a class="navbar-brand" href="#">Welcome to SDP</a>
+			</div>
+			<ul class="role_selection nav navbar-nav">
+			  <li id="participant" class="active"><a href="/Participant/availableCourse/">Participant</a></li>
+			  {% if request.user|has_group:"1" %}
+			  	<li id="instructor"><a href="/Instructor/createdCourses/">Instructor</a></li>
+			  {% endif %}
+			  {% if request.user|has_group:"3" %}
+			  <li id="HR"><a href="#">HR</a></li>
+			  {% endif %}
+			  {% if request.user|has_group:"4" %}
+			  <li id="admin"><a href="#">Admin</a></li>
+			  {% endif %}
+			</ul>
+		  </div>
+		</nav>
+
+        <div class="content container">
+            <div class="row">
+                <div class="col-md-8">
+					{% block content %}
+
+					{% endblock %}
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+<script>
+</script>

@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<ul class="nav nav-tabs">
+		<li><a href="/Instructor/createdCourses/">View Created Courses</a></li>
+		<li class="active"><a href="/Instructor/createCourse/">Create New Course</a></li>
+		<li><a href="/accounts/logout/">Log-out</a></li>
+</ul>
+	<form method="POST" class="form-horizontal post-form">{% csrf_token %}
+  <fieldset>
+    <legend>Create New Course</legend>
+    <div class="form-group">
+      <label for="CourseName" class="col-lg-2 control-label">Course name</label>
+      <div class="col-lg-10">
+        <input type="text" class="form-control" id="CourseName" name="CourseName" placeholder="Enter Course Name">
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="CourseDesc" class="col-lg-2 control-label">Course description</label>
+      <div class="col-lg-10">
+        <textarea class="form-control" rows="3" name="CourseDesc" id="CourseDesc"></textarea>
+        <span class="help-block">Please enter course description</span>
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label for="CourseCategory" class="col-lg-2 control-label">Select Category</label>
+      <div class="col-lg-10">
+        <select class="form-control" id="CourseCategory" name="CourseCategory">
+          	{% for cata in categorys %}
+				<option value="{{ cata.id }}">{{ cata.name }}</option>
+			{% endfor %}
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-lg-10 col-lg-offset-2">
+        <button type="reset" class="btn btn-default">Cancel</button>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </fieldset>
+</form>
+<script>
+	$(".role_selection li").removeClass("active");
+	$("#instructor").addClass("active");
+</script>
+{% endblock %}

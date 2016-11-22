@@ -2,7 +2,9 @@ from django.shortcuts import render
 from SDP_API.models import Course, Category, User, Instructor, Module, Component
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def created_courses_view(request):
     currUserID = request.user.id
     currInstructor = Instructor.objects.get(user=currUserID)
@@ -18,6 +20,7 @@ def created_courses_view(request):
     else:
         return render(request, 'createdCourses.html', {'courses': courses,'categorys':categorys})
 
+@login_required
 def release_course(request):
     if request.method == 'POST' and 'releaseCourseID' in request.POST:
         releaseCourseID = request.POST.get("releaseCourseID") #['releaseCourseID']
@@ -31,6 +34,7 @@ def release_course(request):
     else:
         return HttpResponse(status=400)
 
+@login_required
 def create_course(request):
     if request.POST:
 
@@ -54,7 +58,7 @@ def create_course(request):
         categorys = Category.objects.all()
         return render(request, 'createCourse.html', {'categorys':categorys} )
 
-
+@login_required
 def create_module(request):
     course = Course.objects.get(id=request.GET['courseID'])
     if request.POST:
@@ -71,6 +75,7 @@ def create_module(request):
     else: #attempt to create module
         return render(request, 'createModule.html', {'course': course})
 
+@login_required
 def create_component(request):
     module = Module.objects.get(id=request.GET['moduleID'])
     course = Course.objects.get(id=request.GET['courseID'])

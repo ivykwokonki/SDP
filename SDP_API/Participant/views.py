@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from SDP_API.models import Course, User, Profile, Category, Module, Component
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def AvailableCourseView(request):
     courses = Course.objects.filter(is_opened=True)
     categorys = Category.objects.all()
@@ -14,7 +16,7 @@ def AvailableCourseView(request):
         return render(request, 'availableCourse.html', {'courses':courses,'categorys':categorys})
 
 
-
+@login_required
 def currentCourseView(request):
     currUserID = request.user.id
     currCourseID = Profile.objects.get(user=currUserID).currentCourse
@@ -24,7 +26,7 @@ def currentCourseView(request):
     componentList = Component.objects.filter(course_id=currCourseID)
     return render(request, 'currentCourses.html', {'course': course, 'moduleList': moduleList, 'componentList': componentList} )
 
-
+@login_required
 def enrollment(request):
 
     user = User.objects.get(id=request.user.id)

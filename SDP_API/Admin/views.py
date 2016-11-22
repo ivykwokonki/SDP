@@ -3,7 +3,9 @@ from SDP_API.models import Course, Category, User, Instructor, Profile
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
 from django.contrib.auth.models import Group
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def UserPermissionView(request):
     if 'username' in request.GET:
         #search this username
@@ -15,7 +17,7 @@ def UserPermissionView(request):
         instructor = Instructor.objects.all()
         return render(request, 'userPermission.html', {'user': user,'profile': profile, 'group': group, 'instructor': instructor})
 
-
+@login_required
 def editUserPermission(request):
     if request.POST:
 
@@ -36,7 +38,7 @@ def editUserPermission(request):
     else:
         return HttpResponse(status=400)
 
-
+@login_required
 def manageCategoryView(request):
     if request.POST['newCategory']:
         newCategoryName = request.POST['newCategory']

@@ -14,15 +14,17 @@
 		</tr>
 		{% for module in moduleList %}
 		<tr>
-				<td> <a href="/Instructor/createdCourses/createComponent/?courseID={{course.id}}&moduleID={{module.id}}">{{ module.name }} </td>
-					{% for component in componentList %}
-					<tr>
-						<td>
-						{% if component.module_id == module.id %}
-							<td>{{component.name}}</td>
-						{% endif %}
-					</tr>
-					{% endfor %}
+				<td> <a href="/Instructor/createdCourses/createdModule/?courseID={{course.id}}&moduleID={{module.id}}">{{ module.name }} </td>
+					{% if module.order == 1 %}
+						<td><input disabled type="button" value="UP" onclick="location.href='/Instructor/createdCourses/moduleMoveUp/?courseID={{course.id}}&moduleID={{module.id}}'"></td>
+					{% else %}
+						<td><input type="button" value="UP" onclick="location.href='/Instructor/createdCourses/moduleMoveUp/?courseID={{course.id}}&moduleID={{module.id}}'"></td>
+					{% endif %}
+					{% if module.order == course.no_of_module %}
+						<td><input disabled type="button" value="DOWN" onclick="location.href='/Instructor/createdCourses/moduleMoveDown/?courseID={{course.id}}&moduleID={{module.id}}'"></td>
+					{% else %}
+						<td><input type="button" value="DOWN" onclick="location.href='/Instructor/createdCourses/moduleMoveDown/?courseID={{course.id}}&moduleID={{module.id}}'"></td>
+					{% endif %}
 		</tr>
 		{% endfor %}
 	</table>

@@ -1,9 +1,18 @@
-# from django import forms
-#
-# from models import Post
-#
-# class CreateCourse(forms.ModelForm):
-#
-#     class Meta:
-#         model = Course
-#         fields = ('name', 'description','category', )
+# -*- coding: utf-8 -*-
+from django import forms
+from django.contrib.auth.models import User
+
+class DocumentForm(forms.Form):
+    docfile = forms.FileField(
+        label='Select a file',
+        help_text='max. 42 megabytes'
+    )
+    # componentName = forms.FileField
+    # componentOrder = forms.FileField
+    # type = forms.FileField
+class UserForm(forms.ModelForm):
+    password = forms.CharField(widget=forms.PasswordInput)
+
+    class Meta:
+        model = User
+        fields = ['username', 'password']

@@ -20,11 +20,15 @@ def AvailableCourseView(request):
 def currentCourseView(request):
     currUserID = request.user.id
     currCourseID = Profile.objects.get(user=currUserID).currentCourse
-    course = Course.objects.get(id=currCourseID)
 
-    moduleList = Module.objects.filter(course_id=currCourseID)
-    componentList = Component.objects.filter(course_id=currCourseID)
-    return render(request, 'currentCourses.html', {'course': course, 'moduleList': moduleList, 'componentList': componentList} )
+    if currCourseID == -999:
+        return render(request, 'currentCourses.html', {'error': "No current Course."})
+    else:
+        course = Course.objects.get(id=currCourseID)
+
+        moduleList = Module.objects.filter(course_id=currCourseID)
+        componentList = Component.objects.filter(course_id=currCourseID)
+        return render(request, 'currentCourses.html', {'course': course, 'moduleList': moduleList, 'componentList': componentList} )
 
 @login_required
 def enrollment(request):
@@ -49,7 +53,16 @@ def enrollment(request):
     course = Course.objects.get(id=profile.currentCourse)
     return render(request, 'enrollment.html', {'profile': profile, 'course': course})
 
+@login_required
+def drop(request):
+    user = User.objects.get(id=request.user.id)
+    profile = Profile.objects.filter(user=request.user.id)[0]
 
+    profile.currentCourse = -999
+    profile.latestModule = -999
+    profile.save()
+
+    return render(request, 'enrollment.html', {'profile': profile})
 
 
 

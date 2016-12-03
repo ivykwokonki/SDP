@@ -19,45 +19,120 @@ def UserPermissionView(request):
 
 @login_required
 def editUserPermission(request):
-    if request.POST:
+    # if request.method == 'POST' and 'userID' in request.POST:
+    if request.method == 'POST':
 
-        group = request.POST['group']
-        userID = request.POST['user_id']
-        request_type = request.POST['request_type'] #True: add to group / False: remove from group
-
-        g = Group.objects.get(name=group)
+        userID = request.POST['userID']
         user = User.objects.get(id=userID)
+        is_allowed = request.POST['is_allowed']  # True: add to group / False: remove from group
+        request_type = request.POST['request_type']
+        # 1:permission of hr, admin, instructor
+        # 2:permision of instructor: i)create ii)manage course
+        # 3:permission of access SDP : set user.acitve = False
 
-        if  request_type==True:
-            g.user_set.add(user)
-        else:
-            g.user_set.remove(user)
 
-        return HttpResponse("success")
+        if(request_type=="1"):
+            print("enter 1")
+            print(is_allowed)
+            group = request.POST['permission_name']
+            # if(group!="Instructor") or (group!="HR_staff") or (group!="Administrator"):
+            #     return HttpResponse(status=400)
+            if(group=="Instructor"):
+                if(is_allowed=="true"):
+                    Instructor.objects.create(
+                        user=user
+                    )
+                else:
+                    instructor = Instructor.objects.get(user=user)
+                    instructor.delete()
+                    instructor.save()
+
+            g = Group.objects.get(name=group)
+
+            if (is_allowed=="true"):
+
+                g.user_set.add(user)
+            else:
+                print("gg")
+                g.user_set.remove(user)
+
+            return HttpResponse("success")
+
+
+        elif(request_type=='2'):
+            print("enter 2")
+            instructor = Instructor.objects.get(user=user)
+            permission = request.POST['permission_name']
+            if(permission=="create"):
+                instructor.permission_createCourse = is_allowed
+                instructor.save()
+                return HttpResponse("success")
+            elif(permission=="modify"):
+                instructor.permission_modifyCourse = is_allowed
+                instructor.save()
+                return HttpResponse("success")
+            else:
+                return HttpResponse(status=400)
+
+            return HttpResponse("success")
+
+        elif(request_type=='3'):
+            print("enter 3")
+            if(is_allowed =="true"):
+                user.is_active = True
+                user.save()
+            else:
+                user.is_active = False
+                user.save()
+            return HttpResponse("success")
 
     else:
         return HttpResponse(status=400)
 
+
 @login_required
 def manageCategoryView(request):
-    if request.POST['newCategory']:
-        newCategoryName = request.POST['newCategory']
-        if(Category.objects.get(name=newCategoryName)):
-            return HttpResponse("duplicate category name ! ")
-        else:
-            Category.objects.create(
-                name = newCategoryName,
-            )
-
-    elif request.POST['renameCategoryID']:  #rename
-        renameCategory = Category.objects.get(id=request.POST['renameCategoryID'])
-        renameCategory.name = request.POST['renameCategory']
-        renameCategory.save()
-
-    elif request.POST['deleteCategoryID']:    #delete
-        renameCategory = Category.objects.get(id=request.POST['deleteCategoryID'])
-        renameCategory.name = request.POST['renameCategory']
-        renameCategory.delete()
 
     category = Category.objects.all()
-    return render(request, 'editCategory.html', {'category': category})
+    return render(request, 'manageCategory.html', {'category': category})
+
+@login_required
+def editCategory(request):
+    if request.POST:
+        print(request.POST)
+        deleteCategory_request = request.POST.get("deleteCategory", "-")
+        renameCategory_request = request.POST.get("renameCategory", "-")
+        newCategoryName_request = request.POST.get("newCategoryName", "-")
+        # print("rename")
+        if deleteCategory_request is not "-":    #delete
+            deleteCategory = Category.objects.get(id=request.POST['deleteCategory'])
+            print(deleteCategory)
+            deleteCategory.delete()
+            return HttpResponse("success")
+
+
+        elif renameCategory_request is not "-":  #rename
+            print("rename")
+            renameCategory = Category.objects.get(id=request.POST['renameCategoryID'])
+            renameCategory.name = request.POST['renameCategory']
+            renameCategory.save()
+            return HttpResponse("success")
+
+
+        elif newCategoryName_request is not "-":     #new category
+            print("create")
+            newCategoryName = request.POST['newCategoryName']
+            Category_exist = Category.objects.filter(name=newCategoryName)
+            if(Category_exist.count()>0):
+                return HttpResponse("duplicate category name ! ")
+            else:
+                Category.objects.create(
+                    name = newCategoryName,
+                )
+            return HttpResponse("success")
+
+
+        # else:
+        #     return HttpResponse("success")
+    else:
+        return HttpResponse(status=400)

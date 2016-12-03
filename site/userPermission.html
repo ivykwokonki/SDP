@@ -27,15 +27,66 @@
 			<th>Instructor:modify</th>
 			<th>Access to SDP</th>
 		</tr>
+		{% load user_context %}
+
 		{% for u in user %}
 		<tr>
 			<td>{{ u.username }}</td>
-			<td> <input type="checkbox" class="admin_permission {{u.id}}" value="{% %}"> </td>
-			<td> <input type="checkbox" class="HR_permission {{u.id}}" value=""> </td>
-			<td> <input type="checkbox" class="Instructor_permission {{u.id}}" value=""> </td>
-			<td> <input type="checkbox" class="Instructor_create {{u.id}}" value=""> </td>
-			<td> <input type="checkbox" class="Instructor_modify {{u.id}}" value=""> </td>
-			<td> <input type="checkbox" class="accessSDP_permission {{u.id}}" value=""> </td>
+
+			<td>
+			{% if u|has_group:"4" %}
+				<input type="checkbox" class="edit_permission 1 {{u.id}}" value="Administrator" checked>
+			{% else %}
+				<input type="checkbox" class="edit_permission 1 {{u.id}}" value="Administrator">
+			{% endif %}
+			</td>
+
+			<td>
+				{% if u|has_group:"3" %}
+					<input type="checkbox" class="edit_permission 1 {{u.id}}" value="HR_staff" checked>
+				{% else %}
+					<input type="checkbox" class="edit_permission 1 {{u.id}}" value="HR_staff">
+				{% endif %}
+			</td>
+
+			<td>
+				{% if u|has_group:"1" %}
+					<input type="checkbox" class="edit_permission 1 {{u.id}}" value="Instructor" checked>
+				{% else %}
+					<input type="checkbox" class="edit_permission 1 {{u.id}}" value="Instructor">
+				{% endif %}
+			</td>
+
+			
+				{% if u|has_group:"1" %}
+					{% for i in instructor %}
+						{% if i.user == u %}
+							<td>
+								<input type="checkbox" class="edit_permission 2 {{u.id}}" value="create"
+								{% if i.permission_createCourse %}
+									checked
+								{% endif %}
+								> 
+							</td>
+							<td> <input type="checkbox" class="edit_permission 2 {{u.id}}" value="modify"
+								{% if i.permission_modifyCourse %}
+									checked
+								{% endif %}
+							> </td>
+						{% endif %}
+					{% endfor %}
+				{% else %}
+					<td> <input type="checkbox" class="edit_permission 2 {{u.id}}" value="create" disabled> </td>
+					<td> <input type="checkbox" class="edit_permission 2 {{u.id}}" value="modify" disabled> </td>
+				{% endif %}
+
+				<td>
+				{% if u.is_active %}
+					<input type="checkbox" class="edit_permission 3 {{u.id}}" value="Access" checked>
+				{% else %}
+					<input type="checkbox" class="edit_permission 3 {{u.id}}" value="Access">
+				{% endif %}
+				</td> 
 		</tr>
 		{% endfor %}
 	</table>
@@ -60,39 +111,48 @@
 	<script>
 
 		api = "http://127.0.0.1:8000/";
-		$(".role_selection li").removeClass("active");
-		$("#admin").addClass("active");
-		function role_select(){
-				// search all user in that role
-				console.log("hihi");
-		}
+		// $(".role_selection li").removeClass("active");
+		// $("#admin").addClass("active");
+		// function role_select(){
+		// 		// search all user in that role
+		// 		console.log("hihi");
+		// }
 
 
-		$(".release_submit_btn").click(function() {
-			courseID = $(this).attr("id");
+		$(".edit_permission").click(function() {
+			request_type = $(this).attr('class').split(' ')[1];
+			userID = $(this).attr('class').split(' ')[2];
+			is_allowed = $(this).prop("checked");
+			permission_name = $(this).val();
+			console.log(request_type+" "+userID+" "+is_allowed+" "+permission_name);
 			$.ajax({
 				type: "POST",
-				url: api +"Instructor/releaseCourse/",
+				url: api +"Admin/editUserPermission/",
 				data:{ 
-					releaseCourseID:courseID,
+					request_type:request_type,
+					is_allowed:is_allowed,
+					userID:userID,
+					permission_name:permission_name,
 					csrfmiddlewaretoken: '{{ csrf_token }}' },
 				success:function(msg){
 					if(msg=="success")
-						console.log("success");
-					$(".warning-modal").modal('hide');
+						alert("success");
+					console.log("success");
 					location.reload();
-					
-				},complete:function(){
-					console.log("complete");
-				},
-    			error:function (xhr, textStatus, thrownError){
+				}
+				
+    			,error:function (xhr, textStatus, thrownError){
         			alert("error:"+thrownError);
     			}
 
 			});
-  			$("#release_submit_btn").attr("course",$(this).attr('id'))
+
+
+
 		});
 
 
 	</script>
 {% endblock %}
+
+

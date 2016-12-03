@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django import forms
 
 class Instructor(models.Model):
     user = models.ForeignKey(User, primary_key=True, default=1)
@@ -24,7 +24,7 @@ class Course(models.Model):
     is_opened = models.BooleanField(default=False)
     category = models.ForeignKey(Category)
     instructor = models.ForeignKey(Instructor)
-    orderOfModule = models.TextField(blank=True);
+    no_of_module = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -33,6 +33,8 @@ class Course(models.Model):
 class Module(models.Model):
     name = models.CharField(max_length=100)
     course = models.ForeignKey(Course)
+    order = models.PositiveIntegerField(default=1)
+    no_of_component = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -43,19 +45,24 @@ class Component(models.Model):
         TEXT = 0
         PHOTO = 1
         FILE = 2
-        QUIZ = 3
+        VIDEO = 3
+        QUIZ = 4
 
     type_choices = (
         (TYPE.TEXT, "text"),
         (TYPE.PHOTO, "photo"),
         (TYPE.FILE, "file"),
+        (TYPE.VIDEO, "video"),
         (TYPE.QUIZ, "quiz"),
     )
     name = models.CharField(max_length=100, default='component')
     type = models.PositiveSmallIntegerField(choices=type_choices, )
-    link = models.URLField(max_length=100)
+    text_content = models.TextField(null=True, default=None)
+    file = models.FileField(upload_to='uploaded_file/',null=True, default=None)
+    link = models.TextField(null=True, default=None)
     course = models.ForeignKey(Course)
     module = models.ForeignKey(Module)
+    order = models.PositiveIntegerField(default=1)
 
     def __str__(self):
         return self.id
@@ -75,7 +82,6 @@ class Profile(models.Model):
         verbose_name = "AB User"
 
     user = models.ForeignKey(User, primary_key=True)
-    ABusername = models.CharField(max_length=8, default='ABstaff0')
     currentCourse = models.IntegerField(default=-999)
     latestModule = models.IntegerField(default=-999)
 

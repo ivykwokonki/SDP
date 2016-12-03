@@ -2,38 +2,101 @@
 
 {% block content %}
 <ul class="nav nav-tabs">
-		<li><a href="/Instructor/createdCourses/">View Created Courses</a></li>
-		<li><a href="/Instructor/createdCourses/createModule/?courseID={{course.id}}">Create New Module</a></li>
-		<li><a href="/accounts/logout/">Log-out</a></li>
+    <li><a href="/Instructor/createdCourses/">View Created Courses</a></li>
+    <li><a href="/Instructor/createdCourses/createModule/?courseID={{course.id}}">Create New Module</a></li>
+    <li><a href="/accounts/logout/">Log-out</a></li>
 </ul>
-	<form method="POST" class="form-horizontal post-form">{% csrf_token %}
+  <form method="POST" class="form-horizontal post-form" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.errors }}
+  {{ form.non_field_errors }}
   <fieldset>
     <legend>Create New Component</legend>
     <div class="form-group">
 
       <div class="col-lg-10">
         <label for="componentType" class="col-lg-2 control-label">Component Type</label>
-      	<select class="form-control" id="componentType" name="componentType">
-      		<option value="0">text</option>
-      		<option value="1">photo</option>
-      		<option value="2">file</option>
-      		<option value="3">quiz</option>
-      	</select>
-      	 <label for="componentName" class="col-lg-2 control-label">Component name</label>
+        <select class="form-control" id="componentType" onchange="type_changed()" name="componentType">
+          <option value="0">text</option>
+          <option value="1">photo</option>
+          <option value="2">file</option>
+          <option value="3">video</option>
+          <option value="4">quiz</option>
+        </select>
+        <label for="componentName" class="col-lg-2 control-label">Component name</label>
         <input type="text" class="form-control" id="componentName" name="componentName" placeholder="Enter Component Name">
+
+        <div class="text_class">
+          <label for="text_content" class="col-lg-2 control-label">Text Content</label>
+          <textarea class="form-control" rows="3" name="text_content" id="text_content" placeholder="Enter text content"></textarea>
+        </div>
+
+        <label for="componentOrder" class="col-lg-2 control-label">Order</label>
+        <input type="number" class="form-control" id="componentOrder" name="componentOrder" placeholder="Enter Order of the Component: e.g. '3'">
+
+        <div class="link_class" style="display:none">
+          <label for="link" class="col-lg-2 control-label">Link</label>
+          <input type="text" class="form-control file" id="link" name="link">
+        </div>
+
+        <div class="file_class" style="display:none"> 
+            <p>
+                {{ form.docfile.errors }}
+                <br>{{ form.docfile }}
+            </p>
+            <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
+<!--           <label for="file" class="col-lg-2 control-label">Upload File</label>
+          <input type="file" class="form-control file" id="file" name="file"> -->
+        </div>
+
       </div>
     </div>
 
     <div class="form-group">
       <div class="col-lg-10 col-lg-offset-2">
-        <button type="reset" class="btn btn-default">Cancel</button>
+        <button id="reset_form" type="reset" class="btn btn-default" onclick="window.location.reload()">Cancel</button>
         <button type="submit" class="btn btn-primary">Submit</button>
       </div>
     </div>
   </fieldset>
 </form>
 <script>
-	$(".role_selection li").removeClass("active");
-	$("#instructor").addClass("active");
+  $(".role_selection li").removeClass("active");
+  $("#instructor").addClass("active");
+  function type_changed(){
+    type_selected = $("#componentType").val();
+    $("#reset_form").trigger('reset');
+    if( type_selected == 0){
+      $(".link_class").hide();
+      $(".file_class").hide();
+      $(".text_class").show();
+    }
+
+    else if( type_selected == 1 ){
+      $(".link_class").show();
+      $(".file_class").hide();
+      $(".text_class").hide();
+    }
+
+    else if( type_selected == 2 ){
+      $(".link_class").hide();
+      $(".file_class").show();
+      $(".text_class").hide();
+    }
+
+    else if( type_selected == 3 ){
+      $(".link_class").show();
+      $(".file_class").hide();
+      $(".text_class").hide();
+    }
+
+    else if( type_selected == 4 ){
+      $(".link_class").hide();
+      $(".file_class").hide();
+      $(".text_class").hide();
+    }
+
+
+  }
 </script>
 {% endblock %}

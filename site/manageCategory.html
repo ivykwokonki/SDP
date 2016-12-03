@@ -8,7 +8,7 @@
 <h1>Manage User Permission</h1>
 	<div>
 
-		<button class="btn btn-warning" id="createCategory_btn"></button>
+		<button class="btn btn-warning" id="createCategory_btn">Create Category</button>
 
 	</div>
 	<table class="table table-striped table-hover">
@@ -21,7 +21,7 @@
 			<td>{{ c.name }}</td>
 			<td>	
 				<button class="btn btn-success renameCategory" id="{{c.id}}">Rename</button>
-				<button class="btn btn-danager createCategory" id="{{c.id}}">Delete</button>
+				<button class="btn btn-danger deleteCategory" id="{{c.id}}">Delete</button>
 			</td>
 		</tr>
 		{% endfor %}
@@ -34,11 +34,13 @@
 	        <h4 class="modal-title">Create Category</h4>
 	      </div>
 	      <div class="modal-body form-group">
-	        <input id="newCategory" name="newCategory" type="text" class="form-control input-lg" placeholder="Enter new category name" />
+	      	{% csrf_token %}
+	        <input id="newCategory" name="newCategory" type="text" class="form-control input-lg" placeholder="Enter category name" />
+
 	      </div>
 	      <div class="modal-footer form-group">
 	        <button type="reset" class="btn btn-default" data-dismiss="modal">Close</button>
-	        <button type="submit" class="btn btn-warning">Save changes</button>
+	        <button class="btn btn-warning modal_submit_btn">Save changes</button>
 	      </div>
 	    </div>
 	  </div>
@@ -51,9 +53,134 @@
 		$("#admin").addClass("active");
 
 		$("#createCategory_btn").click(function() {
+			$(".modal-title").html("Create Category");
+			$("#newCategory").val("");
+  			$(".modal_submit_btn").removeClass("renameCategory_btn");
+  			$(".modal_submit_btn").addClass("category_create_btn");
   			$("#newCategory-modal").modal('show');
 		});
 
+		$(".renameCategory").click(function() {
+			$(".modal-title").html("Rename Category");
+			$("#newCategory").val("");
+			$(".modal_submit_btn").attr("Cid",$(this).attr("id"));
+			$(".modal_submit_btn").removeClass("category_create_btn");
+			$(".modal_submit_btn").addClass("renameCategory_btn");
+			$("#newCategory-modal").modal('show');
+		});
+		
+		$(".modal_submit_btn").click(function() {	//create category
+
+			if($(this).hasClass("renameCategory_btn")){
+				renameCategoryID = $(this).attr("Cid");
+				renameCategory = $("#newCategory").val();
+				$.ajax({
+					type: "POST",
+					url: api +"Admin/editCategory/",
+					data:{
+						renameCategory:renameCategory,
+						renameCategoryID:renameCategoryID,
+						csrfmiddlewaretoken: '{{ csrf_token }}' },
+					success:function(msg){
+						window.location.reload();
+						
+					},
+	    			error:function (xhr, textStatus, thrownError){
+	        			alert("error:"+thrownError);
+	    			}
+
+				});
+			}
+
+			else if($(this).hasClass("category_create_btn")){
+				newCategoryName = $("#newCategory").val();
+				$.ajax({
+					type: "POST",
+					url: api +"Admin/editCategory/",
+					data:{
+						newCategoryName:newCategoryName,
+						csrfmiddlewaretoken: '{{ csrf_token }}' },
+					success:function(msg){
+						if(msg=="success")
+							console.log("success");
+						$(".newCategory-modal").modal('hide');
+						window.location.reload();
+						
+					},
+	    			error:function (xhr, textStatus, thrownError){
+	        			alert("error:"+thrownError);
+	    			}
+				});
+
+
+			}
+		});
+
+		// $(".category_create_btn").click(function() {	//create category
+		// 	newCategoryName = $("#newCategory").val();
+		// 	$.ajax({
+		// 		type: "POST",
+		// 		url: api +"Admin/editCategory/",
+		// 		data:{
+		// 			newCategoryName:newCategoryName,
+		// 			csrfmiddlewaretoken: '{{ csrf_token }}' },
+		// 		success:function(msg){
+		// 			if(msg=="success")
+		// 				console.log("success");
+		// 			$(".newCategory-modal").modal('hide');
+		// 			window.location.reload();
+					
+		// 		},
+  //   			error:function (xhr, textStatus, thrownError){
+  //       			alert("error:"+thrownError);
+  //   			}
+
+		// 	});
+		// });
+
+
+		// $("#renameCategory_btn").click(function() {	//create category
+		// 	renameCategory = $("#newCategory").val();
+		// 	console.log(renameCategory);
+		// 	$.ajax({
+		// 		type: "POST",
+		// 		url: api +"Admin/editCategory/",
+		// 		data:{
+		// 			renameCategory:renameCategory,
+		// 			csrfmiddlewaretoken: '{{ csrf_token }}' },
+		// 		success:function(msg){
+		// 			window.location.reload();
+					
+		// 		},
+  //   			error:function (xhr, textStatus, thrownError){
+  //       			alert("error:"+thrownError);
+  //   			}
+
+		// 	});
+		// });
+
+
+
+
+		$(".deleteCategory").click(function() {	//create category
+			deleteCategory = $(this).attr("id");
+			console.log(deleteCategory);
+			$.ajax({
+				type: "POST",
+				url: api +"Admin/editCategory/",
+				data:{
+					deleteCategory:deleteCategory,
+					csrfmiddlewaretoken: '{{ csrf_token }}' },
+				success:function(msg){
+					window.location.reload();
+					
+				},
+    			error:function (xhr, textStatus, thrownError){
+        			alert("error:"+thrownError);
+    			}
+
+			});
+		});
 
 	</script>
 {% endblock %}

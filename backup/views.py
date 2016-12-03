@@ -190,40 +190,25 @@ def create_component(request):
         componentList = Component.objects.filter(course_id=request.GET['courseID']).order_by('order')
         return render(request, 'createdModule.html', {'course': course, 'module': module, 'componentList': componentList})
     else: #attempt to create component
-        return render(request, 'createComponent.html', {'course': course, 'module': module})
-
-@login_required
-def delete_component(request):
-    try:
-        course = Course.objects.get(id=request.GET['courseID'])
-        moduleList = Module.objects.filter(course_id=request.GET['courseID']).order_by('order')
-        componentList = Component.objects.filter(course_id=request.GET['courseID']).order_by('order')
-        module = Module.objects.get(id=request.GET['moduleID'])
-        component = Component.objects.get(id=request.GET['componentID'])
-        componentOrder = component.order
-        component.delete()
-        Component.objects.filter(course_id=request.GET['courseID'], order__gte=componentOrder).update(order=F('order')-1)
-        module.no_of_component = module.no_of_component-1
-        module.save()
-        return render(request, 'createdModule.html', {'course': course, 'module': module, 'componentList': componentList})
-    except:
-        return render(request, 'createdModule.html', {'course': course, 'module': module, 'componentList': componentList})
-
-@login_required
-def delete_module(request):
-    try:
-        course = Course.objects.get(id=request.GET['courseID'])
-        moduleList = Module.objects.filter(course_id=request.GET['courseID']).order_by('order')
-        componentList = Component.objects.filter(course_id=request.GET['courseID']).order_by('order')
-        module = Module.objects.get(id=request.GET['moduleID'])
-        moduleOrder = module.order
-        module.delete()
-        Module.objects.filter(course_id=request.GET['courseID'], order__gte=moduleOrder).update(order=F('order')-1)
-        course.no_of_module = course.no_of_module-1
-        course.save()
-        return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList})
-    except:
-        return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList})
+        return render(request, 'createComponent.html', {'course': course, 'module': module,'form': form})
+    #
+    # module = Module.objects.get(id=request.GET['moduleID'])
+    # course = Course.objects.get(id=request.GET['courseID'])
+    # if request.POST:
+    #     print(request.POST)
+    #     print(request.FILES)
+    #     componentName = request.POST['componentName']
+    #     type = request.POST['componentType']
+    #
+    #     UserID = request.user.id  # by that instructor
+    #
+    #
+    #     moduleList = Module.objects.filter(course_id=request.GET['courseID'])
+    #     componentList = Component.objects.filter(course_id=request.GET['courseID'])
+    #     return render(request, 'createdCourse.html',
+    #                   {'course': course, 'moduleList': moduleList, 'componentList': componentList})
+    # else:  # attempt to create component
+    #     return render(request, 'createComponent.html', {'course': course, 'module': module})
 
 @login_required
 def component_move_up(request):
@@ -264,6 +249,7 @@ def module_move_up(request):
     try:
         course = Course.objects.get(id=request.GET['courseID'])
         moduleList = Module.objects.filter(course_id=request.GET['courseID']).order_by('order')
+        componentList = Component.objects.filter(course_id=request.GET['courseID']).order_by('order')
         currentModule = Module.objects.get(id=request.GET['moduleID'])
         currentOrder = currentModule.order
         upperModule = Module.objects.get(course_id=request.GET['courseID'], order=currentOrder-1)
@@ -271,15 +257,16 @@ def module_move_up(request):
         upperModule.save()
         currentModule.order = currentOrder-1
         currentModule.save()
-        return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList})
+        return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList, 'componentList': componentList})
     except:
-        return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList})
+        return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList, 'componentList': componentList})
 
 @login_required
 def module_move_down(request):
     try:
         course = Course.objects.get(id=request.GET['courseID'])
         moduleList = Module.objects.filter(course_id=request.GET['courseID']).order_by('order')
+        componentList = Component.objects.filter(course_id=request.GET['courseID']).order_by('order')
         currentModule = Module.objects.get(id=request.GET['moduleID'])
         currentOrder = currentModule.order
         lowerModule = Module.objects.get(course_id=request.GET['courseID'], order=currentOrder+1)
@@ -287,6 +274,6 @@ def module_move_down(request):
         lowerModule.save()
         currentModule.order = currentOrder+1
         currentModule.save()
-        return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList})
+        return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList, 'componentList': componentList})
     except:
-        return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList})
+        return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList, 'componentList': componentList})

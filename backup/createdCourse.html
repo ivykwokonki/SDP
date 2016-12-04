@@ -4,7 +4,6 @@
 <ul class="nav nav-tabs">
 		<li><a href="/Instructor/createdCourses/">View Created Courses</a></li>
 		<li><a href="/Instructor/createdCourses/createModule/?courseID={{course.id}}">Create New Module</a></li>
-		<li><a href="/accounts/logout/">Log-out</a></li>
 </ul>
 <h1>{{ course.name }}</h1>
 	<table class="table table-striped table-hover">
@@ -14,7 +13,8 @@
 		</tr>
 		{% for module in moduleList %}
 		<tr>
-				<td> <a href="/Instructor/createdCourses/createdModule/?courseID={{course.id}}&moduleID={{module.id}}">{{ module.name }}</a> </td>
+				<td> <a href="/Instructor/createdCourses/createdModule/?courseID={{course.id}}&moduleID={{module.id}}">{{ module.name }} </td>
+				{% if not_released and can_modify %}
 					{% if module.order == 1 %}
 						<td><input disabled type="button" value="UP" onclick="location.href='/Instructor/createdCourses/moduleMoveUp/?courseID={{course.id}}&moduleID={{module.id}}'"></td>
 					{% else %}
@@ -25,14 +25,13 @@
 					{% else %}
 						<td><input type="button" value="DOWN" onclick="location.href='/Instructor/createdCourses/moduleMoveDown/?courseID={{course.id}}&moduleID={{module.id}}'"></td>
 					{% endif %}
-					<td><input type="button" value="EDIT" onclick="location.href='/Instructor/createdCourses/editModule/?courseID={{course.id}}&moduleID={{module.id}}'"></td>
-					<td><input type="button" value="DELETE" onclick="location.href='/Instructor/createdCourses/deleteModule/?courseID={{course.id}}&moduleID={{module.id}}'"></td>
+				{% endif %}
 		</tr>
 		{% endfor %}
 	</table>
-
-{% endblock %}
 <script>
-	$(".role_selection li").removeClass("active");
-	$("#instructor").addClass("active");
+		$(".role_selection li").removeClass("active");
+		$("#instructor").addClass("active");
 </script>
+{% endblock %}
+

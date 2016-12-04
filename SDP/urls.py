@@ -48,6 +48,8 @@ urlpatterns = [
     url(r'^Instructor/createdCourses/moduleMoveDown/$', Instructor_views.module_move_down),
     url(r'^Instructor/createdCourses/deleteComponent/$', Instructor_views.delete_component),
     url(r'^Instructor/createdCourses/deleteModule/$', Instructor_views.delete_module),
+    url(r'^Instructor/createdCourses/editComponent/$', Instructor_views.edit_component),
+    url(r'^Instructor/createdCourses/editModule/$', Instructor_views.edit_module),
 
     url(r'^Admin/userPermission/$', Admin_views.UserPermissionView),
     url(r'^Admin/editUserPermission/$', Admin_views.editUserPermission),

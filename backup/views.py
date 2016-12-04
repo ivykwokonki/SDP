@@ -27,8 +27,12 @@ def created_courses_view(request):
         return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList, 'componentList': componentList, 'not_released':not_released, 'can_modify':can_modify})
     else:
         can_create = create_permission(currUserID)
-        print(can_create)
-        return render(request, 'createdCourses.html', {'courses': courses,'categorys':categorys,'can_create':can_create})
+        if 'category' in request.GET and request.GET['category'] != 'all':
+            courses = courses.filter(category=request.GET['category'])
+            return render(request, 'createdCourses.html',
+                          {'courses': courses, 'categorys': categorys, 'can_create': can_create})
+        else:
+            return render(request, 'createdCourses.html', {'courses': courses,'categorys':categorys,'can_create':can_create})
 
 @login_required
 def created_module_view(request):
@@ -64,16 +68,26 @@ def release_course(request):
 
 @login_required
 def create_course(request):
+    categorys = Category.objects.all()
     if request.POST:
 
         CourseName = request.POST['CourseName']
         CourseDescription = request.POST['CourseDesc']
 
+        if CourseName is "":  #cant be empty
+            error = "Course name cannot be empty!"
+            return render(request, 'createCourse.html', {'categorys': categorys, 'error': error})
+
+        checkCourseName = Course.objects.filter(name=CourseName)
+        if  checkCourseName.count()>0:   #cant repeat
+            error = "This course name is duplicated!"
+            return render(request, 'createCourse.html', {'categorys': categorys,'error':error})
+
         CourseCategoryID = request.POST['CourseCategory']
         CourseCategory = Category.objects.get(id=CourseCategoryID)
 
         UserID = request.user.id
-        CourseInstructor = Instructor.objects.get(user=UserID)
+        CourseInstructor = Instructor.objects.filter(user=UserID)[0]
         Course.objects.create(
             name = CourseName,
             description = CourseDescription,
@@ -82,7 +96,6 @@ def create_course(request):
         )
         return HttpResponseRedirect ("/Instructor/createdCourses/")
     else:
-        categorys = Category.objects.all()
         return render(request, 'createCourse.html', {'categorys':categorys} )
 
 @login_required
@@ -90,21 +103,28 @@ def create_module(request):
     course = Course.objects.get(id=request.GET['courseID'])
     if request.POST:
         moduleName = request.POST['moduleName']
+
+        if moduleName is "":  # cant be empty
+            error = "Module name cannot be empty!"
+            return render(request, 'createModule.html', {'course': course, 'error': error})
+
+        checkModuleName = Module.objects.filter(name=moduleName)
+        if checkModuleName.count() > 0:  # cant repeat
+            error = "This module name is duplicated!"
+            return render(request, 'createModule.html', {'course': course, 'error': error})
+
+        noOfModule = Module.objects.filter(course_id=request.GET['courseID']).count()
         moduleOrder = request.POST['moduleOrder']
         Module.objects.filter(course_id=request.GET['courseID'], order__gte=moduleOrder).update(order=F('order')+1)
         UserID = request.user.id
-        course.no_of_module = course.no_of_module+1
-        course.save()
-        if (moduleOrder > course.no_of_component):
-            moduleOrder = course.no_of_component
-
         Module.objects.create(
             course_id = request.GET['courseID'],
             name = moduleName,
             order = moduleOrder,
         )
 
-
+        course.no_of_module = course.no_of_module+1
+        course.save()
         moduleList = Module.objects.filter(course_id=request.GET['courseID']).order_by('order')
         componentList = Component.objects.filter(course_id=request.GET['courseID']).order_by('order')
         return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList})
@@ -116,18 +136,24 @@ def create_component(request):
     module = Module.objects.get(id=request.GET['moduleID'])
     course = Course.objects.get(id=request.GET['courseID'])
     form = DocumentForm(request.POST, request.FILES)
+    print(request.POST)
+    print("why nothing...")
     if request.POST:
-        print(request.POST)
-        print(request.GET)
         componentName = request.POST['componentName']
         type = request.POST['componentType']
         UserID = request.user.id
-        componentOrder = request.POST['componentOrder']
+        componentOrder = int( request.POST['componentOrder'] )
         Component.objects.filter(course_id=request.GET['courseID'], order__gte=componentOrder).update(order=F('order')+1)
-        module.no_of_component = module.no_of_component+1
-        module.save()
-        if (componentOrder > module.no_of_component):
-            componentOrder = module.no_of_component
+        print("enter post...")
+        if componentName is "":  # cant be empty
+            error = "Component name cannot be empty!"
+            print(error)
+            return render(request, 'createComponent.html', {'course': course, 'module': module, 'error': error})
+
+        checkComponentName = Component.objects.filter(name=componentName)
+        if checkComponentName.count() > 0:  # cant repeat
+            error = "This component name is duplicated!"
+            return render(request, 'createComponent.html', {'course': course, 'module': module, 'error': error})
 
         if (type == '0'):
             text_content = request.POST['text_content']
@@ -140,7 +166,7 @@ def create_component(request):
                 text_content=text_content,
                 order = componentOrder,
             )
-            print("text yes!")
+
         if (type == '1'):
             link = request.POST['link'];
 
@@ -159,7 +185,6 @@ def create_component(request):
             if form.is_valid():
                 print ("file ok!")
                 file =request.FILES['docfile']
-                print(file)
                 Component.objects.create(
                     course_id=request.GET['courseID'],
                     module_id=request.GET['moduleID'],
@@ -169,8 +194,7 @@ def create_component(request):
                     order = componentOrder
                 )
             else:
-                print ("file Not Ok!")
-                print(form)
+
                 form = DocumentForm()
             # return render(request, 'createComponent.html', {'course': course, 'module': module})
 
@@ -195,7 +219,8 @@ def create_component(request):
                 order = componentOrder,
             )
 
-
+        module.no_of_component = module.no_of_component+1
+        module.save()
         moduleList = Module.objects.filter(course_id=request.GET['courseID']).order_by('order')
         componentList = Component.objects.filter(course_id=request.GET['courseID']).order_by('order')
         return render(request, 'createdModule.html', {'course': course, 'module': module, 'componentList': componentList})
@@ -220,87 +245,6 @@ def delete_component(request):
         return render(request, 'createdModule.html', {'course': course, 'module': module, 'componentList': componentList})
 
 @login_required
-def edit_component(request):
-    course = Course.objects.get(id=request.GET['courseID'])
-    module = Module.objects.get(id=request.GET['moduleID'])
-    component = Component.objects.get(id=request.GET['componentID'])
-    form = DocumentForm(request.POST, request.FILES)
-    if request.POST:
-        print(request.POST)
-        print(request.GET)
-        componentName = request.POST['componentName']
-        type = request.POST['componentType']
-        UserID = request.user.id
-
-        componentOrder = int(request.POST['componentOrder'])
-        Component.objects.filter(course_id=request.GET['courseID'], order__gt=component.order, order__lte=componentOrder).update(order=F('order')-1)
-        if (componentOrder > module.no_of_component):
-            componentOrder = module.no_of_component
-
-        if (type == '0'):
-            text_content = request.POST['text_content']
-
-            Component.objects.filter(id=component.id).update(
-                name=componentName,
-                type=type,
-                text_content=text_content,
-                order = componentOrder,
-            )
-            print("text yes!")
-        if (type == '1'):
-            link = request.POST['link'];
-
-            Component.objects.filter(id=component.id).update(
-                name=componentName,
-                type=type,
-                link=link,
-                order = componentOrder,
-            )
-
-        if (type == '2'):
-
-
-            if form.is_valid():
-                print ("file ok!")
-                file =request.FILES['docfile']
-                print(file)
-                Component.objects.filter(id=component.id).update(
-                    name=componentName,
-                    type=type,
-                    file=file,
-                    order = componentOrder
-                )
-            else:
-                print ("file Not Ok!")
-                print(form)
-                form = DocumentForm()
-            # return render(request, 'createComponent.html', {'course': course, 'module': module})
-
-        if (type == '3'):
-            link = request.POST['link'];
-
-            Component.objects.filter(id=component.id).update(
-                name=componentName,
-                type=type,
-                link=link,
-                order = componentOrder,
-            )
-
-        if (type == '4'):
-            Component.objects.filter(id=component.id).update(
-                name=componentName,
-                type=type,
-                order = componentOrder,
-            )
-
-
-        moduleList = Module.objects.filter(course_id=request.GET['courseID']).order_by('order')
-        componentList = Component.objects.filter(course_id=request.GET['courseID']).order_by('order')
-        return render(request, 'createdModule.html', {'course': course, 'module': module, 'componentList': componentList})
-    else: #attempt to edit component
-        return render(request, 'editComponent.html', {'course': course, 'module': module, 'component': component})
-
-@login_required
 def delete_module(request):
     try:
         course = Course.objects.get(id=request.GET['courseID'])
@@ -315,30 +259,6 @@ def delete_module(request):
         return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList})
     except:
         return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList})
-
-@login_required
-def edit_module(request):
-    course = Course.objects.get(id=request.GET['courseID'])
-    module = Module.objects.get(id=request.GET['moduleID'])
-    if request.POST:
-        moduleName = request.POST['moduleName']
-        moduleOrder = int(request.POST['moduleOrder'])
-        Module.objects.filter(course_id=request.GET['courseID'], order__gt=module.order, order__lte=moduleOrder).update(order=F('order')+1)
-        UserID = request.user.id
-        if (moduleOrder > course.no_of_module):
-            moduleOrder = course.no_of_module
-
-        Module.objects.filter(id=module.id).update(
-            name = moduleName,
-            order = moduleOrder,
-        )
-
-
-        moduleList = Module.objects.filter(course_id=request.GET['courseID']).order_by('order')
-        componentList = Component.objects.filter(course_id=request.GET['courseID']).order_by('order')
-        return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList})
-    else: #attempt to edit module
-        return render(request, 'editModule.html', {'course': course, 'module': module})
 
 @login_required
 def component_move_up(request):

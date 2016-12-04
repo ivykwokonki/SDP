@@ -12,6 +12,7 @@ class DocumentForm(forms.Form):
     # type = forms.FileField
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
+    username = forms.CharField(max_length=8, min_length=8)
     class Meta:
         model = User
         fields = ['username', 'password']

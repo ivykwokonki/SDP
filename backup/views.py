@@ -2,8 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from SDP_API.models import Course, User, Profile, Category, Module, Component, CourseHistroy
 from django.contrib.auth.decorators import login_required
-from datetime import date,datetime
-from django.db.models import Q
+from datetime import date
 
 @login_required
 def AvailableCourseView(request):
@@ -43,6 +42,14 @@ def viewHistory(request):
     return render(request, 'viewCourseHistory.html', {'historyList': historyList, 'courseList':courseList})
 
 @login_required
+def viewCourse(request):
+    cid = int(request.GET['courseID'])
+    course = Course.objects.get(id=cid)
+    moduleList = Module.objects.filter(course_id=cid).order_by('order')
+    return render(request, 'viewCourse.html', {'completed': 1, 'course': course, 'moduleList': moduleList})
+
+
+@login_required
 def viewComponent(request):
 
     currUserID = request.user.id
@@ -59,27 +66,30 @@ def viewComponent(request):
         completeCourse = Course.objects.get(id=courseID)
         if ((profile.latestModule != 9999) and (completeCourse.no_of_module < profile.latestModule)):
 
-
-            record = CourseHistroy.objects.filter(Q(user_id=currUserID), Q(course_id=courseID))
+            record = CourseHistroy.objects.filter(course=completeCourse)
             print(record)
 
             if record.count() > 0:
-                record[0].completed_at = datetime.now()
+                record[0].completed_at = date.today()
                 record[0].save()
             else:
                 currUser = User.objects.get(id=request.user.id)
 
                 CourseHistroy.objects.create(
-                    completed_at=datetime.now(),
+                    completed_at=date.today(),
                     course=completeCourse,
                     user=currUser
                 )
 
-            profile.latestModule = 9999
+            profile.latestModule = 9999;
             profile.save()
 
     componentList = Component.objects.filter(module_id=moduleID).order_by('order')
-    return render(request, 'viewComponent.html', {'module': module, 'componentList': componentList})
+    if 'completed' in request.GET:
+        return render(request, 'viewComponent.html', {'completed': 1, 'module': module, 'componentList': componentList})
+    else:
+        return render(request, 'viewComponent.html', {'module': module, 'componentList': componentList})
+
 
 
 @login_required

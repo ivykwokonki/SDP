@@ -24,7 +24,7 @@
 			  	<li id="instructor"><a href="/Instructor/createdCourses/">Instructor</a></li>
 			  {% endif %}
 			  {% if request.user|has_group:"3" %}
-			  <li id="HR"><a href="#">HR</a></li>
+			  <li id="HR"><a href="/HR/search/">HR</a></li>
 			  {% endif %}
 			  {% if request.user|has_group:"4" %}
 			  <li id="admin"><a href="/Admin/userPermission/">Administrator</a></li>

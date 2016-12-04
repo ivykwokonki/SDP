@@ -26,15 +26,23 @@
 				</tr>
 				<tr>
 				<td>
-				{% if component.type == 0 %}
-					<div>{{component.text_content}}</div>
+					{% if component.type == 0 %}
+						<div>{{ component.text_content }}</div>
 					{% endif %}
-				{% if component.type == 1 %}
-					<img src={{component.link}} width="auto">
+					{% if component.type == 1 %}
+						<img src="{{ component.link}}" width="auto">
 					{% endif %}
-				{% if component.type == 3 %}
-					<iframe width="560" height="315" src={{component.link}} frameborder="0" allowfullscreen></iframe>
+					{% if component.type == 2 %}
+        				<a href="{{ component.file.url }}">{{ component.file.name }}</a>
 					{% endif %}
+					{% if component.type == 3 %}
+						<iframe width="560" height="315" src="{{component.link}}"" frameborder="0" allowfullscreen></iframe>
+					{% endif %}
+					{% if component.type == 4 %}
+						<div>Quiz Link:</div>
+						<a href="#"></a>
+					{% endif %}
+
 				</td>
 				</tr>
 				{% endif %}

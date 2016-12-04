@@ -4,6 +4,7 @@
 <ul class="nav nav-tabs">
 		<li><a href="/Participant/availableCourse/">View Available Courses</a></li>
 		<li><a href="/Participant/currentCourse/">Current Course</a></li>
+		<li><a href="/Participant/courseHistory/">Course History</a></li>
 </ul>
 <h1>Enrollment</h1>
 	<div>
@@ -29,6 +30,7 @@
 		<br>
 		<br>
 		<span><button id="drop" class="btn btn-danger" value="{{ course.name }}" onclick="dropfn()">Drop</button><span>
+		<script type="text/javascript"></script>
 	{% endif %}
 {% endblock %}
 

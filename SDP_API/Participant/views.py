@@ -43,6 +43,14 @@ def viewHistory(request):
     return render(request, 'viewCourseHistory.html', {'historyList': historyList, 'courseList':courseList})
 
 @login_required
+def viewCourse(request):
+    cid = int(request.GET['courseID'])
+    course = Course.objects.get(id=cid)
+    moduleList = Module.objects.filter(course_id=cid).order_by('order')
+    return render(request, 'viewCourse.html', {'completed': 1, 'course': course, 'moduleList': moduleList})
+
+
+@login_required
 def viewComponent(request):
 
     currUserID = request.user.id
@@ -79,8 +87,10 @@ def viewComponent(request):
             profile.save()
 
     componentList = Component.objects.filter(module_id=moduleID).order_by('order')
-    return render(request, 'viewComponent.html', {'module': module, 'componentList': componentList})
-
+    if 'completed' in request.GET:
+        return render(request, 'viewComponent.html', {'completed': 1, 'module': module, 'componentList': componentList})
+    else:
+        return render(request, 'viewComponent.html', {'module': module, 'componentList': componentList})
 
 @login_required
 def enrollment(request):

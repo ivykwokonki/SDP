@@ -10,6 +10,12 @@
 	<h1>{{ error }}</h1>
 {% else %}
 <h1>Current Course : {{ course.name }}</h1>
+
+	{% if profile.latestModule == 9999 %}
+		<h3>Congratulations!</h3>
+		<h4>You have completed this course.<br>
+		Please go to "View Available Courses" to enroll a new course.</h4>
+	{% endif %}
 	<table class="table table-striped table-hover">
 		<tr>
 			<th>Modules:</th>
@@ -17,7 +23,9 @@
 		</tr>
 		{% for module in moduleList %}
 		<tr>
-				<td>{{module.name}}</td>
+			{% if module.order <= profile.latestModule %}
+				<td><a href="/Participant/viewComponent/?courseID={{course.id}}&moduleID={{module.id}}">{{module.name}}</a></td>
+				
 				
 				{% for component in componentList %}
 						<tr>
@@ -47,7 +55,16 @@
 		</tr>
 		{% endfor %}
 	</table>
+		{% if profile.latestModule != 9999 %}
+			<br>
+			<br>
+			<span>
+			<button id="drop" class="btn btn-danger" value="{{ course.name }}" onclick="dropfn()">Drop</button>
+			</span>
+		{% endif %}
 	<script>
+			  $(".role_selection li").removeClass("active");
+		  $("#instructor").addClass("active");
 	function dropfn() {
 		var name = document.getElementById("drop").value;
 		var r = confirm("Current Course: "+name+"\nAre you sure to drop the current course?\nAll progress will be lost.");
@@ -55,15 +72,6 @@
 			window.location.href = "/Participant/drop/";
 		}
 	}
-	</script>
-	<br>
-	<br>
-	<span>
-	<button id="drop" class="btn btn-danger" value="{{ course.name }}" onclick="dropfn()">Drop</button>
-	</span>
-	<script>
-		  $(".role_selection li").removeClass("active");
-		  $("#instructor").addClass("active");
 	</script>
 {% endif %}
 

@@ -78,8 +78,8 @@ def create_course(request):
             error = "Course name cannot be empty!"
             return render(request, 'createCourse.html', {'categorys': categorys, 'error': error})
 
-        CourseName = Course.objects.filter(name=CourseName)
-        if  CourseName.count()>0:   #cant repeat
+        checkCourseName = Course.objects.filter(name=CourseName)
+        if  checkCourseName.count()>0:   #cant repeat
             error = "This course name is duplicated!"
             return render(request, 'createCourse.html', {'categorys': categorys,'error':error})
 
@@ -87,8 +87,7 @@ def create_course(request):
         CourseCategory = Category.objects.get(id=CourseCategoryID)
 
         UserID = request.user.id
-        CourseInstructor = Instructor.objects.get(user=UserID)
-        print(CourseInstructor)
+        CourseInstructor = Instructor.objects.filter(user=UserID)[0]
         Course.objects.create(
             name = CourseName,
             description = CourseDescription,

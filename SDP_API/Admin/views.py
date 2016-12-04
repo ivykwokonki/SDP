@@ -32,8 +32,6 @@ def editUserPermission(request):
 
 
         if(request_type=="1"):
-            print("enter 1")
-            print(is_allowed)
             group = request.POST['permission_name']
             # if(group!="Instructor") or (group!="HR_staff") or (group!="Administrator"):
             #     return HttpResponse(status=400)
@@ -53,7 +51,6 @@ def editUserPermission(request):
 
                 g.user_set.add(user)
             else:
-                print("gg")
                 g.user_set.remove(user)
 
             return HttpResponse("success")

@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from SDP_API.models import Course, User, Profile, Category, Module, Component
+from SDP_API.models import Course, User, Profile, Category, Module, Component, CourseHistroy
 from django.contrib.auth.decorators import login_required
+from datetime import date
 
 @login_required
 def AvailableCourseView(request):
@@ -19,7 +20,8 @@ def AvailableCourseView(request):
 @login_required
 def currentCourseView(request):
     currUserID = request.user.id
-    currCourseID = Profile.objects.get(user=currUserID).currentCourse
+    profile = Profile.objects.get(user=currUserID)
+    currCourseID = profile.currentCourse
 
     if currCourseID == -999:
         return render(request, 'currentCourses.html', {'error': "No current Course."})
@@ -28,7 +30,47 @@ def currentCourseView(request):
 
         moduleList = Module.objects.filter(course_id=currCourseID)
         componentList = Component.objects.filter(course_id=currCourseID)
-        return render(request, 'currentCourses.html', {'course': course, 'moduleList': moduleList, 'componentList': componentList} )
+        return render(request, 'currentCourses.html',
+                      {'profile': profile, 'course': course, 'moduleList': moduleList, 'componentList': componentList})
+
+@login_required
+def viewComponent(request):
+
+    currUserID = request.user.id
+    profile = Profile.objects.get(user=currUserID)
+    moduleID = int(request.GET['moduleID'])
+
+    module = Module.objects.get(id=moduleID)
+
+    if (profile.latestModule == module.order):
+        profile.latestModule = module.order + 1;
+        profile.save()
+
+        courseID = int(request.GET['courseID'])
+        completeCourse = Course.objects.get(id=courseID)
+        if ((profile.latestModule != 9999) and (completeCourse.no_of_module < profile.latestModule)):
+
+            record = CourseHistroy.objects.filter(course=completeCourse)
+            print(record)
+
+            if record.count() > 0:
+                record[0].completed_at = date.today()
+                record[0].save()
+            else:
+                currUser = User.objects.get(id=request.user.id)
+
+                CourseHistroy.objects.create(
+                    completed_at=date.today(),
+                    course=completeCourse,
+                    user=currUser
+                )
+
+            profile.latestModule = 9999;
+            profile.save()
+
+    componentList = Component.objects.filter(module_id=moduleID)
+    return render(request, 'viewComponent.html', {'module': module, 'componentList': componentList})
+
 
 @login_required
 def enrollment(request):
@@ -38,10 +80,11 @@ def enrollment(request):
 
     if 'enroll' in request.GET:
 
-        if profile.currentCourse == -999:
+        if ((profile.currentCourse == -999) or (profile.latestModule == 9999)):
             courseid = int(request.GET['enroll'])
             course = Course.objects.get(id=courseid)
             profile.currentCourse = courseid
+            profile.latestModule = 1
             profile.save()
         else:
             course = Course.objects.get(id=profile.currentCourse)

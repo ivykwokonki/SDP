@@ -30,7 +30,9 @@ urlpatterns = [
     url(r'^accounts/register/$', views.register),
     url(r'^Participant/availableCourse/$', Participant_views.AvailableCourseView),
     url(r'^Participant/currentCourse/$', Participant_views.currentCourseView),
+    url(r'^Participant/viewCourse/$', Participant_views.viewCourse),
     url(r'^Participant/viewComponent/$', Participant_views.viewComponent),
+    url(r'^Participant/courseHistory/$', Participant_views.viewHistory),
     url(r'^Participant/enrollment/$', Participant_views.enrollment),
     url(r'^Participant/drop/$', Participant_views.drop),
 
@@ -50,6 +52,8 @@ urlpatterns = [
     url(r'^Instructor/createdCourses/deleteModule/$', Instructor_views.delete_module),
     url(r'^Instructor/createdCourses/editComponent/$', Instructor_views.edit_component),
     url(r'^Instructor/createdCourses/editModule/$', Instructor_views.edit_module),
+
+    url(r'^HR/search/$', HR_views.search),
 
     url(r'^Admin/userPermission/$', Admin_views.UserPermissionView),
     url(r'^Admin/editUserPermission/$', Admin_views.editUserPermission),

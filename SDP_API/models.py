@@ -69,7 +69,7 @@ class Component(models.Model):
 
 
 class CourseHistroy(models.Model):
-    completed_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(editable=True)
     course = models.ForeignKey(Course)
     user = models.ForeignKey(User)
 

@@ -2,8 +2,6 @@
 <html>
     <head>
         <title>SDP</title>
-        {% load static %}
-		<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 		<style>
@@ -21,10 +19,12 @@
     </head>
     <body>
 		<div class="container">
-
+		{% if form.errors %}
+			{{form.errors}}
+		{% endif %}
 		<div class="row">
 		    <div class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3">
-				<form action="" method="post" name="Register_Form">   
+				<form action="" method="post" name="Register_Form" onsubmit="validateForm()">>   
 					<h2>Please Sign Up <small>Every AB staff can register for once.</small></h2>
 					<hr class="colorgraph">{% csrf_token %}
 					<div class="form-group">
@@ -45,7 +45,7 @@
 					
 					<hr class="colorgraph">
 					<div class="row">
-						<div class="col-xs-12 col-md-6"><input type="submit" value="Register" class="btn btn-primary btn-block btn-lg" tabindex="7"></div>
+						<div class="col-xs-12 col-md-6"><input type="" value="Register" class="btn btn-primary btn-block btn-lg" tabindex="7" ></div>
 						<div class="col-xs-12 col-md-6"><a href="#" class="btn btn-success btn-block btn-lg">Sign In</a></div>
 					</div>
 				</form>
@@ -56,6 +56,21 @@
 		<script type="text/javascript">
 			$(function () {
 	    $('.button-checkbox').each(function () {
+
+function validateForm() {
+	console.log("enter!")
+    var pw = $("#password").val();
+    var comf_pw = $("#password_confirmation").val(); 
+    if (pw != comf_pw) {
+        alert("Two password is not consistent!");
+        return false;
+    }
+    var name = $("#username").val(); 
+    if ( name.length != 8){
+    	alert("Your AB Username should be in 8 digital!");
+        return false;
+    }
+}
 
 	        // Settings
 	        var $widget = $(this),

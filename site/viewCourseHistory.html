@@ -17,7 +17,7 @@
 				<tr>
 					{% for course in courseList %}
 						{% if course.id == record.course_id %}
-							<td>{{ course.name }}</td>
+							<td><a href='/Participant/viewCourse/?completed=1&courseID={{course.id}}'>{{ course.name }}</a></td>
 						{% endif %}
 					{% endfor %}
 					<td>{{ record.completed_at }}</td>
@@ -27,12 +27,8 @@
 		{% else %}
 			<span>No Course History.</span>
 		{% endif %}
-		<br>
-		<br>
-		<span><a class="btn btn-primary" href="/HR/search/">Back</a></span>
 	<script>
 		$(".role_selection li").removeClass("active");
 		$("#Participant").addClass("active");
 	</script>
-
 {% endblock %}

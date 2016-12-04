@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from SDP_API.models import Course, User, Profile, Category, Module, Component, CourseHistroy
 from django.contrib.auth.decorators import login_required
-from datetime import date
+from datetime import date,datetime
+from django.db.models import Q
 
 @login_required
 def AvailableCourseView(request):
@@ -28,10 +29,18 @@ def currentCourseView(request):
     else:
         course = Course.objects.get(id=currCourseID)
 
-        moduleList = Module.objects.filter(course_id=currCourseID)
+        moduleList = Module.objects.filter(course_id=currCourseID).order_by('order')
         componentList = Component.objects.filter(course_id=currCourseID)
         return render(request, 'currentCourses.html',
                       {'profile': profile, 'course': course, 'moduleList': moduleList, 'componentList': componentList})
+
+
+@login_required
+def viewHistory(request):
+    userID = request.user.id
+    historyList = CourseHistroy.objects.filter(user_id=userID)
+    courseList = Course.objects.all()
+    return render(request, 'viewCourseHistory.html', {'historyList': historyList, 'courseList':courseList})
 
 @login_required
 def viewComponent(request):
@@ -50,25 +59,26 @@ def viewComponent(request):
         completeCourse = Course.objects.get(id=courseID)
         if ((profile.latestModule != 9999) and (completeCourse.no_of_module < profile.latestModule)):
 
-            record = CourseHistroy.objects.filter(course=completeCourse)
+
+            record = CourseHistroy.objects.filter(Q(user_id=currUserID), Q(course_id=courseID))
             print(record)
 
             if record.count() > 0:
-                record[0].completed_at = date.today()
+                record[0].completed_at = datetime.now()
                 record[0].save()
             else:
                 currUser = User.objects.get(id=request.user.id)
 
                 CourseHistroy.objects.create(
-                    completed_at=date.today(),
+                    completed_at=datetime.now(),
                     course=completeCourse,
                     user=currUser
                 )
 
-            profile.latestModule = 9999;
+            profile.latestModule = 9999
             profile.save()
 
-    componentList = Component.objects.filter(module_id=moduleID)
+    componentList = Component.objects.filter(module_id=moduleID).order_by('order')
     return render(request, 'viewComponent.html', {'module': module, 'componentList': componentList})
 
 

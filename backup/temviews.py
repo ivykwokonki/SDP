@@ -8,7 +8,7 @@ from .forms import UserForm
 
 def login(request):
     if request.user.is_authenticated():
-        return HttpResponseRedirect("/Participant/currentCourse/")
+        return HttpResponseRedirect("/Participant/availableCourse/")
 
     elif request.POST:
         username = request.POST.get('username','')
@@ -20,7 +20,7 @@ def login(request):
         elif user.is_active:
 
             auth.login(request,user)
-            return HttpResponseRedirect("/Participant/currentCourse/")
+            return HttpResponseRedirect("/Participant/availableCourse/")
 
         else:
             print("why not valid")

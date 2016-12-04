@@ -7,8 +7,6 @@
 </ul>
   <form method="POST" class="form-horizontal post-form" method="post" enctype="multipart/form-data">
   {% csrf_token %}
-  {{ form.errors }}
-  {{ form.non_field_errors }}
   <fieldset>
     <legend>Create New Component</legend>
         {% if error %}
@@ -42,10 +40,10 @@
 
         <div class="file_class" style="display:none"> 
             <p>
-                {{ form.docfile.errors }}
+
                 <br>{{ form.docfile }}
             </p>
-            <p>{{ form.docfile.label_tag }} {{ form.docfile.help_text }}</p>
+            
 <!--           <label for="file" class="col-lg-2 control-label">Upload File</label>
           <input type="file" class="form-control file" id="file" name="file"> -->
         </div>

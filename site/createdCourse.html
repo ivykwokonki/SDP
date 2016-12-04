@@ -10,10 +10,13 @@
 		<tr>
 			<th>Modules:</th>
 			<th></th>
+			<th></th>
+			<th></th>
+			<th></th>
 		</tr>
 		{% for module in moduleList %}
 		<tr>
-				<td> <a href="/Instructor/createdCourses/createdModule/?courseID={{course.id}}&moduleID={{module.id}}">{{ module.name }} </td>
+				<td> <a href="/Instructor/createdCourses/createdModule/?courseID={{course.id}}&moduleID={{module.id}}">{{ module.name }} </a></td>
 				{% if not_released and can_modify %}
 					{% if module.order == 1 %}
 						<td><input disabled type="button" value="UP" onclick="location.href='/Instructor/createdCourses/moduleMoveUp/?courseID={{course.id}}&moduleID={{module.id}}'"></td>
@@ -25,6 +28,9 @@
 					{% else %}
 						<td><input type="button" value="DOWN" onclick="location.href='/Instructor/createdCourses/moduleMoveDown/?courseID={{course.id}}&moduleID={{module.id}}'"></td>
 					{% endif %}
+					<td><input type="button" value="EDIT" onclick="location.href='/Instructor/createdCourses/editModule/?courseID={{course.id}}&moduleID={{module.id}}'"></td>
+					<td><input type="button" value="DELETE" onclick="location.href='/Instructor/createdCourses/deleteModule/?courseID={{course.id}}&moduleID={{module.id}}'"></td>
+		
 				{% endif %}
 		</tr>
 		{% endfor %}

@@ -23,7 +23,7 @@ class Course(models.Model):
     description = models.TextField(blank=True)
     is_opened = models.BooleanField(default=False)
     category = models.ForeignKey(Category)
-    instructor = models.ForeignKey(Instructor)
+    instructor = models.PositiveIntegerField()
     no_of_module = models.PositiveIntegerField(default=0)
 
     def __str__(self):

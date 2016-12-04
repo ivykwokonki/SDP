@@ -3,8 +3,9 @@
 {% block content %}
 <ul class="nav nav-tabs">
 		<li class="active"><a href="/Instructor/createdCourses/">View Created Courses</a></li>
+		{% if can_create %}
 		<li><a href="/Instructor/createCourse/">Create New Course</a></li>
-		<li><a href="/accounts/logout/">Log-out</a></li>
+		{% endif %}
 </ul>
 <h1>Created Courses</h1>
 	<div>

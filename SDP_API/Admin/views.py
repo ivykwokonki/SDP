@@ -60,21 +60,29 @@ def editUserPermission(request):
 
 
         elif(request_type=='2'):
-            print("enter 2")
+
             instructor = Instructor.objects.get(user=user)
             permission = request.POST['permission_name']
             if(permission=="create"):
-                instructor.permission_createCourse = is_allowed
+                print("enter create")
+                if (is_allowed == "true"):
+                    instructor.permission_createCourse = True
+                else:
+                    instructor.permission_createCourse = False
                 instructor.save()
                 return HttpResponse("success")
             elif(permission=="modify"):
-                instructor.permission_modifyCourse = is_allowed
+                print("enter modify")
+                if (is_allowed == "true"):
+                    instructor.permission_modifyCourse = True
+                else:
+                    instructor.permission_modifyCourse = False
                 instructor.save()
                 return HttpResponse("success")
             else:
+                print("gg")
                 return HttpResponse(status=400)
 
-            return HttpResponse("success")
 
         elif(request_type=='3'):
             print("enter 3")

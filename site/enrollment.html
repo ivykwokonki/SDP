@@ -4,7 +4,6 @@
 <ul class="nav nav-tabs">
 		<li><a href="/Participant/availableCourse/">View Abailable Courses</a></li>
 		<li><a href="/Participant/currentCourse/">Current Course</a></li>
-		<li><a href="/accounts/logout/">Log-out</a></li>
 </ul>
 <h1>Enrollment</h1>
 	<div>
@@ -16,6 +15,8 @@
 	</div>
 	{% if error %}
 	<script>
+		$(".role_selection li").removeClass("active");
+		$("#participant").addClass("active");
 	function dropfn() {
 		var name = document.getElementById("drop").value;
 		var r = confirm("Current Course: "+name+"\nAre you sure to drop the current course?\nAll progress will be lost.");
@@ -23,7 +24,7 @@
 			window.location.href = "/Participant/drop/";
 		}
 	}
-</script>
+	</script>
 		<span id="test">{{ error }}<span>
 		<br>
 		<br>

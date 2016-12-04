@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 		<style>
 			.wrapper {    
-				margin-top: 80px;
+				margin-top: 40px;
 				margin-bottom: 20px;
 			}
 
@@ -54,11 +54,19 @@
 			  background-image: -o-linear-gradient(left, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
 			  background-image: linear-gradient(to right, #c4e17f, #c4e17f 12.5%, #f7fdca 12.5%, #f7fdca 25%, #fecf71 25%, #fecf71 37.5%, #f0776c 37.5%, #f0776c 50%, #db9dbe 50%, #db9dbe 62.5%, #c49cde 62.5%, #c49cde 75%, #669ae1 75%, #669ae1 87.5%, #62c2e4 87.5%, #62c2e4);
 			}
+			.error_msg {
+				margin-top:20px;
+				text-align: center;
+			    color: red;
+			    font-size: 20px;
+			}
 		</style>
     </head>
     <body>
-
         <div class = "container">
+        	{% if error %}
+		        <p class="error_msg">Your username and password didn't match. Please try again.</p>
+		    {% endif %}
 			<div class="wrapper">
 				<form action="" method="post" name="Login_Form" class="form-signin">       
 					<h3 class="form-signin-heading">SDP Login Page</h3>
@@ -72,14 +80,10 @@
 				</form>			
 			</div>
 		</div>
-
     </body>
 </html>
 <script>
-//         <div class="page-header">
-//             <h1>SDP Login Page</h1>
-//         </div>
-// <label for="">AB Username:</label>
+
 <label for="password">Password:</label>
 //         <div class="content container">
 //             <div class="row">

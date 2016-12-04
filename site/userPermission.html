@@ -109,14 +109,9 @@
 	</div>
 
 	<script>
-
+		$(".role_selection li").removeClass("active");
+		$("#admin").addClass("active");
 		api = "http://127.0.0.1:8000/";
-		// $(".role_selection li").removeClass("active");
-		// $("#admin").addClass("active");
-		// function role_select(){
-		// 		// search all user in that role
-		// 		console.log("hihi");
-		// }
 
 
 		$(".edit_permission").click(function() {

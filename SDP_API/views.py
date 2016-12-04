@@ -14,14 +14,19 @@ def login(request):
         username = request.POST.get('username','')
         password = request.POST.get('password','')
 
-        user = auth.authenticate(username=username,password =password)
+        user = auth.authenticate(username=username, password=password)
+        if user is None:
+            return render(request, 'login.html',{'error': "Wrong Username or Password! Try again!"})
+        elif user.is_active:
 
-        if user.is_active:
             auth.login(request,user)
             return HttpResponseRedirect("/Participant/availableCourse/")
+
         else:
-            return render(request, 'login.html')
+            print("why not valid")
+            return render(request, 'login.html',{'error': "Wrong Username or Password! Try again!"})
     else:
+        print("why not post")
         return render(request, 'login.html')
 
 def register(request):

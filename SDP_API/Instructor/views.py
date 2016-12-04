@@ -20,9 +20,15 @@ def created_courses_view(request):
         course = Course.objects.get(id=request.GET['courseID'])
         moduleList = Module.objects.filter(course_id=request.GET['courseID']).order_by('order')
         componentList = Component.objects.filter(course_id=request.GET['courseID']).order_by('order')
-        return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList, 'componentList': componentList})
+
+        can_modify = modify_permission(currUserID)
+        not_released = not_released_course(request.GET['courseID'])
+
+        return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList, 'componentList': componentList, 'not_released':not_released, 'can_modify':can_modify})
     else:
-        return render(request, 'createdCourses.html', {'courses': courses,'categorys':categorys})
+        can_create = create_permission(currUserID)
+        print(can_create)
+        return render(request, 'createdCourses.html', {'courses': courses,'categorys':categorys,'can_create':can_create})
 
 @login_required
 def created_module_view(request):
@@ -36,7 +42,9 @@ def created_module_view(request):
         course = Course.objects.get(id=request.GET['courseID'])
         module = Module.objects.get(id=request.GET['moduleID'])
         componentList = Component.objects.filter(course_id=request.GET['courseID']).order_by('order')
-        return render(request, 'createdModule.html', {'course': course, 'module': module, 'componentList': componentList})
+        can_modify = modify_permission(currUserID)
+        not_released = not_released_course(request.GET['courseID'])
+        return render(request, 'createdModule.html', {'course': course, 'module': module, 'componentList': componentList, 'not_released':not_released, 'can_modify':can_modify})
     else:
         return render(request, 'createdCourses.html', {'courses': courses,'categorys':categorys})
 
@@ -64,8 +72,7 @@ def create_course(request):
         CourseCategoryID = request.POST['CourseCategory']
         CourseCategory = Category.objects.get(id=CourseCategoryID)
 
-        #to do
-        UserID = 2
+        UserID = request.user.id
         CourseInstructor = Instructor.objects.get(user=UserID)
         Course.objects.create(
             name = CourseName,
@@ -290,3 +297,27 @@ def module_move_down(request):
         return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList})
     except:
         return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList})
+
+#functions for reuse
+def create_permission(Iid):
+
+    instructor = Instructor.objects.filter(user_id=Iid)[0]
+    if (instructor.permission_createCourse == True):
+        return True
+    else:
+        return False
+
+def modify_permission(Iid):
+
+    instructor = Instructor.objects.filter(user_id=Iid)[0]
+    if (instructor.permission_modifyCourse == True):
+        return True
+    else:
+        return False
+
+def not_released_course(courseID):
+    course = Course.objects.filter(id=courseID)[0]
+    if (course.is_opened == True):
+        return False
+    else:
+        return True

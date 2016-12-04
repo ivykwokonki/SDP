@@ -5,7 +5,6 @@
 <ul class="nav nav-tabs">
 		<li><a href="/Participant/availableCourse/">View Abailable Courses</a></li>
 		<li class="active"><a href="/Participant/currentCourse/">Current Course</a></li>
-		<li><a href="/accounts/logout/">Log-out</a></li>
 </ul>
 {% if error %}
 	<h1>{{ error }}</h1>
@@ -63,8 +62,8 @@
 	<button id="drop" class="btn btn-danger" value="{{ course.name }}" onclick="dropfn()">Drop</button>
 	</span>
 	<script>
-		$(".role_selection li").removeClass("active");
-		$("#participant").addClass("active");
+		  $(".role_selection li").removeClass("active");
+		  $("#instructor").addClass("active");
 	</script>
 {% endif %}
 

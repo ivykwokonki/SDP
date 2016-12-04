@@ -8,6 +8,9 @@
 	<form method="POST" class="form-horizontal post-form">{% csrf_token %}
   <fieldset>
     <legend>Create New Course</legend>
+    {% if error %}
+      <div style="color:red;font-size: 18px;">{{error}}</div>
+    {% endif %}
     <div class="form-group">
       <label for="CourseName" class="col-lg-2 control-label">Course name</label>
       <div class="col-lg-10">

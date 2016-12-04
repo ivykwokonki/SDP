@@ -9,6 +9,9 @@
   <form method="POST" class="form-horizontal post-form">{% csrf_token %}
   <fieldset>
     <legend>Create New Module</legend>
+    {% if error %}
+      <div style="color:red;font-size: 18px;">{{error}}</div>
+    {% endif %}
     <div class="form-group">
       <label for="moduleName" class="col-lg-2 control-label">Module name</label>
       <div class="col-lg-10">

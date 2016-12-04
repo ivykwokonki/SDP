@@ -11,8 +11,10 @@
   {{ form.non_field_errors }}
   <fieldset>
     <legend>Create New Component</legend>
+        {% if error %}
+          <div style="color:red;font-size: 18px;">{{error}}</div>
+        {% endif %}
     <div class="form-group">
-
       <div class="col-lg-10">
         <label for="componentType" class="col-lg-2 control-label">Component Type</label>
         <select class="form-control" id="componentType" onchange="type_changed()" name="componentType">

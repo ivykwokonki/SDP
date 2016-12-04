@@ -27,8 +27,12 @@ def created_courses_view(request):
         return render(request, 'createdCourse.html', {'course': course, 'moduleList': moduleList, 'componentList': componentList, 'not_released':not_released, 'can_modify':can_modify})
     else:
         can_create = create_permission(currUserID)
-        print(can_create)
-        return render(request, 'createdCourses.html', {'courses': courses,'categorys':categorys,'can_create':can_create})
+        if 'category' in request.GET and request.GET['category'] != 'all':
+            courses = courses.filter(category=request.GET['category'])
+            return render(request, 'createdCourses.html',
+                          {'courses': courses, 'categorys': categorys, 'can_create': can_create})
+        else:
+            return render(request, 'createdCourses.html', {'courses': courses,'categorys':categorys,'can_create':can_create})
 
 @login_required
 def created_module_view(request):
@@ -64,16 +68,27 @@ def release_course(request):
 
 @login_required
 def create_course(request):
+    categorys = Category.objects.all()
     if request.POST:
 
         CourseName = request.POST['CourseName']
         CourseDescription = request.POST['CourseDesc']
+
+        if CourseName is "":  #cant be empty
+            error = "Course name cannot be empty!"
+            return render(request, 'createCourse.html', {'categorys': categorys, 'error': error})
+
+        CourseName = Course.objects.filter(name=CourseName)
+        if  CourseName.count()>0:   #cant repeat
+            error = "This course name is duplicated!"
+            return render(request, 'createCourse.html', {'categorys': categorys,'error':error})
 
         CourseCategoryID = request.POST['CourseCategory']
         CourseCategory = Category.objects.get(id=CourseCategoryID)
 
         UserID = request.user.id
         CourseInstructor = Instructor.objects.get(user=UserID)
+        print(CourseInstructor)
         Course.objects.create(
             name = CourseName,
             description = CourseDescription,
@@ -82,7 +97,6 @@ def create_course(request):
         )
         return HttpResponseRedirect ("/Instructor/createdCourses/")
     else:
-        categorys = Category.objects.all()
         return render(request, 'createCourse.html', {'categorys':categorys} )
 
 @login_required
@@ -91,7 +105,15 @@ def create_module(request):
     if request.POST:
         moduleName = request.POST['moduleName']
 
-        # moduleList =
+        if moduleName is "":  # cant be empty
+            error = "Module name cannot be empty!"
+            return render(request, 'createModule.html', {'course': course, 'error': error})
+
+        checkModuleName = Module.objects.filter(name=moduleName)
+        if checkModuleName.count() > 0:  # cant repeat
+            error = "This module name is duplicated!"
+            return render(request, 'createModule.html', {'course': course, 'error': error})
+
         noOfModule = Module.objects.filter(course_id=request.GET['courseID']).count()
         moduleOrder = request.POST['moduleOrder']
         Module.objects.filter(course_id=request.GET['courseID'], order__gte=moduleOrder).update(order=F('order')+1)
@@ -115,15 +137,24 @@ def create_component(request):
     module = Module.objects.get(id=request.GET['moduleID'])
     course = Course.objects.get(id=request.GET['courseID'])
     form = DocumentForm(request.POST, request.FILES)
+    print(request.POST)
+    print("why nothing...")
     if request.POST:
-        print(request.POST)
-        print(request.GET)
         componentName = request.POST['componentName']
         type = request.POST['componentType']
         UserID = request.user.id
-        componentOrder = request.POST['componentOrder']
+        componentOrder = int( request.POST['componentOrder'] )
         Component.objects.filter(course_id=request.GET['courseID'], order__gte=componentOrder).update(order=F('order')+1)
+        print("enter post...")
+        if componentName is "":  # cant be empty
+            error = "Component name cannot be empty!"
+            print(error)
+            return render(request, 'createComponent.html', {'course': course, 'module': module, 'error': error})
 
+        checkComponentName = Component.objects.filter(name=componentName)
+        if checkComponentName.count() > 0:  # cant repeat
+            error = "This component name is duplicated!"
+            return render(request, 'createComponent.html', {'course': course, 'module': module, 'error': error})
 
         if (type == '0'):
             text_content = request.POST['text_content']
@@ -136,7 +167,7 @@ def create_component(request):
                 text_content=text_content,
                 order = componentOrder,
             )
-            print("text yes!")
+
         if (type == '1'):
             link = request.POST['link'];
 
@@ -155,7 +186,6 @@ def create_component(request):
             if form.is_valid():
                 print ("file ok!")
                 file =request.FILES['docfile']
-                print(file)
                 Component.objects.create(
                     course_id=request.GET['courseID'],
                     module_id=request.GET['moduleID'],
@@ -165,8 +195,7 @@ def create_component(request):
                     order = componentOrder
                 )
             else:
-                print ("file Not Ok!")
-                print(form)
+
                 form = DocumentForm()
             # return render(request, 'createComponent.html', {'course': course, 'module': module})
 

@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^accounts/register/$', views.register),
     url(r'^Participant/availableCourse/$', Participant_views.AvailableCourseView),
     url(r'^Participant/currentCourse/$', Participant_views.currentCourseView),
+    url(r'^Participant/viewComponent/$', Participant_views.viewComponent),
     url(r'^Participant/enrollment/$', Participant_views.enrollment),
     url(r'^Participant/drop/$', Participant_views.drop),
 
